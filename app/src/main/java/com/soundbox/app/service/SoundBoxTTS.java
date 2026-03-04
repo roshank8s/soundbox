@@ -5,6 +5,7 @@ import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 import android.util.Log;
@@ -30,6 +31,8 @@ public class SoundBoxTTS implements TextToSpeech.OnInitListener {
     private final PrefsManager prefs;
     private final Queue<PendingAnnouncement> pendingQueue = new LinkedList<>();
     private int utteranceCounter = 0;
+    private PowerManager.WakeLock wakeLock;
+    private String lastUtteranceId = "";
 
     private static class PendingAnnouncement {
         final String text;
@@ -84,6 +87,24 @@ public class SoundBoxTTS implements TextToSpeech.OnInitListener {
             tts.setSpeechRate(prefs.getSpeechRate());
             tts.setPitch(1.0f);
 
+            // Set up listener to release wake lock when speaking finishes
+            tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+                @Override
+                public void onStart(String utteranceId) {}
+
+                @Override
+                public void onDone(String utteranceId) {
+                    if (utteranceId.equals(lastUtteranceId)) {
+                        releaseWakeLock();
+                    }
+                }
+
+                @Override
+                public void onError(String utteranceId) {
+                    releaseWakeLock();
+                }
+            });
+
             isReady = true;
             Log.d(TAG, "TTS initialized successfully");
 
@@ -105,6 +126,9 @@ public class SoundBoxTTS implements TextToSpeech.OnInitListener {
             return;
         }
 
+        // Acquire wake lock so device stays awake during speech
+        acquireWakeLock();
+
         // Maximize volume for the announcement
         setMaxVolume();
 
@@ -113,6 +137,10 @@ public class SoundBoxTTS implements TextToSpeech.OnInitListener {
 
     private void speakWithRepeat(String text, int repeatCount) {
         tts.setSpeechRate(prefs.getSpeechRate());
+
+        // Pre-calculate last utterance ID so wake lock releases only after final repeat
+        String finalUtteranceId = UTTERANCE_ID_PREFIX + (utteranceCounter + repeatCount - 1);
+        lastUtteranceId = finalUtteranceId;
 
         for (int i = 0; i < repeatCount; i++) {
             String utteranceId = UTTERANCE_ID_PREFIX + (utteranceCounter++);
@@ -159,6 +187,35 @@ public class SoundBoxTTS implements TextToSpeech.OnInitListener {
         }
     }
 
+    private void acquireWakeLock() {
+        try {
+            if (wakeLock == null) {
+                PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+                if (pm != null) {
+                    wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "SoundBox:TTSWakeLock");
+                }
+            }
+            if (wakeLock != null && !wakeLock.isHeld()) {
+                // Timeout after 30 seconds as safety net
+                wakeLock.acquire(30_000);
+                Log.d(TAG, "Wake lock acquired for TTS");
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to acquire wake lock", e);
+        }
+    }
+
+    private void releaseWakeLock() {
+        try {
+            if (wakeLock != null && wakeLock.isHeld()) {
+                wakeLock.release();
+                Log.d(TAG, "Wake lock released after TTS");
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to release wake lock", e);
+        }
+    }
+
     public void stop() {
         if (tts != null) {
             tts.stop();
@@ -171,6 +228,7 @@ public class SoundBoxTTS implements TextToSpeech.OnInitListener {
             tts.shutdown();
             isReady = false;
         }
+        releaseWakeLock();
     }
 
     public boolean isReady() {
