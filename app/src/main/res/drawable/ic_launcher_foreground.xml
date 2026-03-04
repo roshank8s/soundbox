@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Speaker icon -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M34,40 L44,40 L56,28 L56,80 L44,68 L34,68 Z" />
+    <!-- Sound waves -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M62,42 Q72,54 62,66"
+        android:strokeWidth="3"
+        android:strokeColor="#FFFFFF"
+        android:fillAlpha="0" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M68,34 Q82,54 68,74"
+        android:strokeWidth="3"
+        android:strokeColor="#FFFFFF"
+        android:fillAlpha="0" />
+</vector>

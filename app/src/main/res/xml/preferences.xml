@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory android:title="@string/cat_general">
+
+        <SwitchPreference
+            android:key="service_enabled"
+            android:title="@string/pref_service_enabled"
+            android:summary="@string/pref_service_enabled_summary"
+            android:defaultValue="true" />
+
+        <SwitchPreference
+            android:key="announce_source"
+            android:title="@string/pref_announce_source"
+            android:summary="@string/pref_announce_source_summary"
+            android:defaultValue="true" />
+
+        <SwitchPreference
+            android:key="announce_app"
+            android:title="@string/pref_announce_app"
+            android:summary="@string/pref_announce_app_summary"
+            android:defaultValue="false" />
+
+        <SwitchPreference
+            android:key="all_notifications_mode"
+            android:title="@string/pref_all_notifications"
+            android:summary="@string/pref_all_notifications_summary"
+            android:defaultValue="false" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/cat_apps">
+
+        <SwitchPreference
+            android:key="paytm_enabled"
+            android:title="@string/pref_paytm"
+            android:defaultValue="true" />
+
+        <SwitchPreference
+            android:key="phonepe_enabled"
+            android:title="@string/pref_phonepe"
+            android:defaultValue="true" />
+
+        <SwitchPreference
+            android:key="gpay_enabled"
+            android:title="@string/pref_gpay"
+            android:defaultValue="true" />
+
+        <SwitchPreference
+            android:key="bhim_enabled"
+            android:title="@string/pref_bhim"
+            android:defaultValue="true" />
+
+        <SwitchPreference
+            android:key="other_upi_enabled"
+            android:title="@string/pref_other_upi"
+            android:summary="@string/pref_other_upi_summary"
+            android:defaultValue="true" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/cat_voice">
+
+        <ListPreference
+            android:key="tts_language"
+            android:title="@string/pref_language"
+            android:entries="@array/language_names"
+            android:entryValues="@array/language_values"
+            android:defaultValue="en_IN" />
+
+        <ListPreference
+            android:key="repeat_count"
+            android:title="@string/pref_repeat"
+            android:summary="@string/pref_repeat_summary"
+            android:entries="@array/repeat_names"
+            android:entryValues="@array/repeat_values"
+            android:defaultValue="1" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

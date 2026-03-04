@@ -1,0 +1,177 @@
+package com.soundbox.app.ui;
+
+import android.content.ComponentName;
+import android.content.Intent;
+import android.graphics.drawable.GradientDrawable;
+import android.os.Bundle;
+import android.provider.Settings;
+import android.view.View;
+import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.switchmaterial.SwitchMaterial;
+import com.soundbox.app.R;
+import com.soundbox.app.model.PaymentInfo;
+import com.soundbox.app.service.PaymentNotificationService;
+import com.soundbox.app.service.SoundBoxTTS;
+import com.soundbox.app.util.PrefsManager;
+
+import java.util.List;
+
+public class MainActivity extends AppCompatActivity implements PaymentNotificationService.OnPaymentListener {
+
+    private View statusIndicator;
+    private TextView tvStatus;
+    private TextView tvStatusDetail;
+    private SwitchMaterial switchService;
+    private MaterialButton btnEnableAccess;
+    private MaterialButton btnTestSound;
+    private RecyclerView rvPayments;
+    private TextView tvNoPayments;
+    private PaymentAdapter adapter;
+    private PrefsManager prefs;
+    private SoundBoxTTS testTTS;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        prefs = new PrefsManager(this);
+
+        initViews();
+        setupToolbar();
+        setupListeners();
+        setupRecyclerView();
+    }
+
+    private void initViews() {
+        statusIndicator = findViewById(R.id.statusIndicator);
+        tvStatus = findViewById(R.id.tvStatus);
+        tvStatusDetail = findViewById(R.id.tvStatusDetail);
+        switchService = findViewById(R.id.switchService);
+        btnEnableAccess = findViewById(R.id.btnEnableAccess);
+        btnTestSound = findViewById(R.id.btnTestSound);
+        rvPayments = findViewById(R.id.rvPayments);
+        tvNoPayments = findViewById(R.id.tvNoPayments);
+    }
+
+    private void setupToolbar() {
+        MaterialToolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == R.id.action_settings) {
+                startActivity(new Intent(this, SettingsActivity.class));
+                return true;
+            }
+            return false;
+        });
+    }
+
+    private void setupListeners() {
+        btnEnableAccess.setOnClickListener(v -> {
+            // Open notification listener settings
+            Intent intent = new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS);
+            startActivity(intent);
+        });
+
+        btnTestSound.setOnClickListener(v -> {
+            if (testTTS == null) {
+                testTTS = new SoundBoxTTS(this);
+            }
+            testTTS.announce(getString(R.string.test_announcement));
+        });
+
+        switchService.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            prefs.setServiceEnabled(isChecked);
+            updateStatus();
+        });
+    }
+
+    private void setupRecyclerView() {
+        adapter = new PaymentAdapter();
+        rvPayments.setLayoutManager(new LinearLayoutManager(this));
+        rvPayments.setAdapter(adapter);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateStatus();
+        loadRecentPayments();
+        PaymentNotificationService.setPaymentListener(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        PaymentNotificationService.setPaymentListener(null);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (testTTS != null) {
+            testTTS.shutdown();
+        }
+    }
+
+    private void updateStatus() {
+        boolean hasPermission = isNotificationListenerEnabled();
+        boolean isEnabled = prefs.isServiceEnabled();
+
+        switchService.setChecked(isEnabled);
+
+        GradientDrawable indicator = (GradientDrawable) statusIndicator.getBackground();
+
+        if (!hasPermission) {
+            indicator.setColor(ContextCompat.getColor(this, R.color.status_inactive));
+            tvStatus.setText(R.string.status_no_permission);
+            tvStatusDetail.setText("Tap below to grant notification access");
+            btnEnableAccess.setVisibility(View.VISIBLE);
+        } else if (isEnabled) {
+            indicator.setColor(ContextCompat.getColor(this, R.color.status_active));
+            tvStatus.setText(R.string.status_active);
+            tvStatusDetail.setText("SoundBox is ready to announce payments");
+            btnEnableAccess.setVisibility(View.GONE);
+        } else {
+            indicator.setColor(ContextCompat.getColor(this, R.color.status_inactive));
+            tvStatus.setText(R.string.status_inactive);
+            tvStatusDetail.setText("Toggle the switch to start listening");
+            btnEnableAccess.setVisibility(View.GONE);
+        }
+    }
+
+    private boolean isNotificationListenerEnabled() {
+        ComponentName cn = new ComponentName(this, PaymentNotificationService.class);
+        String flat = Settings.Secure.getString(getContentResolver(), "enabled_notification_listeners");
+        return flat != null && flat.contains(cn.flattenToString());
+    }
+
+    private void loadRecentPayments() {
+        List<PaymentInfo> payments = PaymentNotificationService.getRecentPayments();
+        adapter.setPayments(payments);
+
+        if (payments.isEmpty()) {
+            tvNoPayments.setVisibility(View.VISIBLE);
+            rvPayments.setVisibility(View.GONE);
+        } else {
+            tvNoPayments.setVisibility(View.GONE);
+            rvPayments.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
+    public void onPaymentReceived(PaymentInfo payment) {
+        runOnUiThread(() -> {
+            adapter.addPayment(payment);
+            tvNoPayments.setVisibility(View.GONE);
+            rvPayments.setVisibility(View.VISIBLE);
+        });
+    }
+}

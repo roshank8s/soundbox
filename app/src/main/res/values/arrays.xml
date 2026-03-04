@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="language_names">
+        <item>English (India)</item>
+        <item>Hindi</item>
+        <item>English (US)</item>
+    </string-array>
+
+    <string-array name="language_values">
+        <item>en_IN</item>
+        <item>hi_IN</item>
+        <item>en_US</item>
+    </string-array>
+
+    <string-array name="repeat_names">
+        <item>Once</item>
+        <item>Twice</item>
+        <item>Three times</item>
+    </string-array>
+
+    <string-array name="repeat_values">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+</resources>

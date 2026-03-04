@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SoundBox</string>
+    <string name="status_active">Listening for payments</string>
+    <string name="status_inactive">Service disabled</string>
+    <string name="status_no_permission">Notification access required</string>
+    <string name="btn_enable_service">Enable Notification Access</string>
+    <string name="btn_test_sound">Test Announcement</string>
+    <string name="btn_settings">Settings</string>
+    <string name="recent_payments">Recent Payments</string>
+    <string name="no_payments">No payments received yet</string>
+    <string name="test_announcement">Payment received, rupees 500, from Test User, via Paytm</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="cat_general">General</string>
+    <string name="cat_apps">Supported Apps</string>
+    <string name="cat_voice">Voice Settings</string>
+
+    <string name="pref_service_enabled">Enable SoundBox</string>
+    <string name="pref_service_enabled_summary">Listen for payment notifications</string>
+    <string name="pref_announce_source">Announce sender name</string>
+    <string name="pref_announce_source_summary">Include sender name in announcement</string>
+    <string name="pref_announce_app">Announce app name</string>
+    <string name="pref_announce_app_summary">Include app name in announcement</string>
+    <string name="pref_all_notifications">Monitor all apps</string>
+    <string name="pref_all_notifications_summary">Detect payments from any app, not just UPI apps</string>
+
+    <string name="pref_paytm">Paytm</string>
+    <string name="pref_phonepe">PhonePe</string>
+    <string name="pref_gpay">Google Pay</string>
+    <string name="pref_bhim">BHIM UPI</string>
+    <string name="pref_other_upi">Other UPI Apps</string>
+    <string name="pref_other_upi_summary">SBI, ICICI, HDFC, Axis, CRED, etc.</string>
+
+    <string name="pref_language">Language</string>
+    <string name="pref_repeat">Repeat announcement</string>
+    <string name="pref_repeat_summary">Number of times to repeat</string>
+</resources>
