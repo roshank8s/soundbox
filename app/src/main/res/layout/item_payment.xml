@@ -3,24 +3,24 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:cardCornerRadius="8dp"
-    app:cardElevation="2dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="1dp"
     android:layout_marginBottom="8dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="16dp"
+        android:padding="14dp"
         android:gravity="center_vertical">
 
-        <!-- Amount -->
+        <!-- Amount Badge -->
         <TextView
             android:id="@+id/tvAmount"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textSize="22sp"
+            android:background="@drawable/bg_amount_badge"
+            android:textSize="16sp"
             android:textColor="@color/amount_green"
             android:textStyle="bold"
             android:text="\u20B9 500" />
@@ -29,7 +29,7 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
+            android:layout_weight="1"
             android:orientation="vertical"
             android:layout_marginStart="12dp">
 
@@ -37,34 +37,31 @@
                 android:id="@+id/tvSource"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="15sp"
+                android:textSize="14sp"
                 android:textColor="@color/text_primary"
-                android:text="From: Unknown" />
+                android:textStyle="bold"
+                android:text="Payment received"
+                android:maxLines="1"
+                android:ellipsize="end" />
 
-            <LinearLayout
+            <TextView
+                android:id="@+id/tvApp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="2dp">
-
-                <TextView
-                    android:id="@+id/tvApp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="12sp"
-                    android:textColor="@color/text_secondary"
-                    android:text="via Paytm" />
-
-                <TextView
-                    android:id="@+id/tvTime"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="12sp"
-                    android:textColor="@color/text_secondary"
-                    android:layout_marginStart="12dp"
-                    android:text="2 min ago" />
-
-            </LinearLayout>
+                android:textSize="12sp"
+                android:textColor="@color/text_secondary"
+                android:text="via Paytm"
+                android:layout_marginTop="2dp" />
         </LinearLayout>
+
+        <!-- Time -->
+        <TextView
+            android:id="@+id/tvTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="11sp"
+            android:textColor="@color/text_secondary"
+            android:text="2m ago" />
+
     </LinearLayout>
 </androidx.cardview.widget.CardView>

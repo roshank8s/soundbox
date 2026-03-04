@@ -11,6 +11,10 @@
     <string name="no_payments">No payments received yet</string>
     <string name="test_announcement">Payment received, rupees 500, from Test User, via Paytm</string>
 
+    <!-- Earnings -->
+    <string name="today_earnings">Today\'s Earnings</string>
+    <string name="total_transactions">transactions today</string>
+
     <!-- Settings -->
     <string name="settings_title">Settings</string>
     <string name="cat_general">General</string>

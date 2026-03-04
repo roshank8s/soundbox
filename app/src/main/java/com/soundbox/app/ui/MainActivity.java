@@ -6,6 +6,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,7 +23,9 @@ import com.soundbox.app.service.PaymentNotificationService;
 import com.soundbox.app.service.SoundBoxTTS;
 import com.soundbox.app.util.PrefsManager;
 
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements PaymentNotificationService.OnPaymentListener {
 
@@ -31,9 +34,11 @@ public class MainActivity extends AppCompatActivity implements PaymentNotificati
     private TextView tvStatusDetail;
     private SwitchMaterial switchService;
     private MaterialButton btnEnableAccess;
-    private MaterialButton btnTestSound;
+    private LinearLayout btnTestSound;
     private RecyclerView rvPayments;
     private TextView tvNoPayments;
+    private TextView tvDailyEarnings;
+    private TextView tvTransactionCount;
     private PaymentAdapter adapter;
     private PrefsManager prefs;
     private SoundBoxTTS testTTS;
@@ -60,6 +65,8 @@ public class MainActivity extends AppCompatActivity implements PaymentNotificati
         btnTestSound = findViewById(R.id.btnTestSound);
         rvPayments = findViewById(R.id.rvPayments);
         tvNoPayments = findViewById(R.id.tvNoPayments);
+        tvDailyEarnings = findViewById(R.id.tvDailyEarnings);
+        tvTransactionCount = findViewById(R.id.tvTransactionCount);
     }
 
     private void setupToolbar() {
@@ -75,7 +82,6 @@ public class MainActivity extends AppCompatActivity implements PaymentNotificati
 
     private void setupListeners() {
         btnEnableAccess.setOnClickListener(v -> {
-            // Open notification listener settings
             Intent intent = new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS);
             startActivity(intent);
         });
@@ -131,18 +137,18 @@ public class MainActivity extends AppCompatActivity implements PaymentNotificati
 
         if (!hasPermission) {
             indicator.setColor(ContextCompat.getColor(this, R.color.status_inactive));
-            tvStatus.setText(R.string.status_no_permission);
-            tvStatusDetail.setText("Tap below to grant notification access");
+            tvStatus.setText("No Access");
+            tvStatusDetail.setText("Permission needed");
             btnEnableAccess.setVisibility(View.VISIBLE);
         } else if (isEnabled) {
             indicator.setColor(ContextCompat.getColor(this, R.color.status_active));
-            tvStatus.setText(R.string.status_active);
-            tvStatusDetail.setText("SoundBox is ready to announce payments");
+            tvStatus.setText("Active");
+            tvStatusDetail.setText("Service On");
             btnEnableAccess.setVisibility(View.GONE);
         } else {
             indicator.setColor(ContextCompat.getColor(this, R.color.status_inactive));
-            tvStatus.setText(R.string.status_inactive);
-            tvStatusDetail.setText("Toggle the switch to start listening");
+            tvStatus.setText("Paused");
+            tvStatusDetail.setText("Service Off");
             btnEnableAccess.setVisibility(View.GONE);
         }
     }
@@ -164,6 +170,47 @@ public class MainActivity extends AppCompatActivity implements PaymentNotificati
             tvNoPayments.setVisibility(View.GONE);
             rvPayments.setVisibility(View.VISIBLE);
         }
+
+        updateDailyEarnings(payments);
+    }
+
+    private void updateDailyEarnings(List<PaymentInfo> payments) {
+        double dailyTotal = 0;
+        int dailyCount = 0;
+
+        long todayStart = getTodayStartMillis();
+
+        for (PaymentInfo payment : payments) {
+            if (payment.getTimestamp() >= todayStart) {
+                dailyCount++;
+                String amountStr = payment.getAmount();
+                if (amountStr != null && !amountStr.isEmpty()) {
+                    try {
+                        String cleaned = amountStr.replaceAll("[^\\d.]", "");
+                        dailyTotal += Double.parseDouble(cleaned);
+                    } catch (NumberFormatException ignored) {
+                    }
+                }
+            }
+        }
+
+        String formatted;
+        if (dailyTotal == (long) dailyTotal) {
+            formatted = String.format(Locale.getDefault(), "\u20B9 %,d", (long) dailyTotal);
+        } else {
+            formatted = String.format(Locale.getDefault(), "\u20B9 %,.2f", dailyTotal);
+        }
+        tvDailyEarnings.setText(formatted);
+        tvTransactionCount.setText(dailyCount + " " + getString(R.string.total_transactions));
+    }
+
+    private long getTodayStartMillis() {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        return cal.getTimeInMillis();
     }
 
     @Override
@@ -172,6 +219,10 @@ public class MainActivity extends AppCompatActivity implements PaymentNotificati
             adapter.addPayment(payment);
             tvNoPayments.setVisibility(View.GONE);
             rvPayments.setVisibility(View.VISIBLE);
+
+            // Update daily earnings with the new payment included
+            List<PaymentInfo> payments = PaymentNotificationService.getRecentPayments();
+            updateDailyEarnings(payments);
         });
     }
 }

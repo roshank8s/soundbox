@@ -13,4 +13,9 @@
     <color name="card_bg">#FFFFFF</color>
     <color name="amount_green">#2E7D32</color>
     <color name="divider">#E0E0E0</color>
+    <color name="earnings_bg_start">#1565C0</color>
+    <color name="earnings_bg_end">#0D47A1</color>
+    <color name="white_70">#B3FFFFFF</color>
+    <color name="amount_bg">#E8F5E9</color>
+    <color name="surface">#FFFFFF</color>
 </resources>

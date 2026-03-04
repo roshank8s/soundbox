@@ -66,14 +66,15 @@ public class PaymentAdapter extends RecyclerView.Adapter<PaymentAdapter.PaymentV
             tvAmount.setText(payment.getDisplayAmount());
 
             String source = payment.getSource();
-            tvSource.setText(source != null ? "From: " + source : "Payment received");
+            tvSource.setText(source != null && !source.isEmpty() ? source : "Payment received");
 
             tvApp.setText("via " + payment.getAppName());
 
             CharSequence timeAgo = DateUtils.getRelativeTimeSpanString(
                     payment.getTimestamp(),
                     System.currentTimeMillis(),
-                    DateUtils.MINUTE_IN_MILLIS);
+                    DateUtils.MINUTE_IN_MILLIS,
+                    DateUtils.FORMAT_ABBREV_RELATIVE);
             tvTime.setText(timeAgo);
         }
     }
