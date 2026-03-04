@@ -51,7 +51,11 @@ public class PrefsManager {
     }
 
     public int getRepeatCount() {
-        return prefs.getInt(KEY_REPEAT_COUNT, 1);
+        try {
+            return Integer.parseInt(prefs.getString(KEY_REPEAT_COUNT, "1"));
+        } catch (Exception e) {
+            return 1;
+        }
     }
 
     public boolean shouldAnnounceSource() {

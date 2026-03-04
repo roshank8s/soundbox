@@ -4,25 +4,25 @@
 
     <PreferenceCategory android:title="@string/cat_general">
 
-        <SwitchPreference
+        <androidx.preference.SwitchPreferenceCompat
             android:key="service_enabled"
             android:title="@string/pref_service_enabled"
             android:summary="@string/pref_service_enabled_summary"
             android:defaultValue="true" />
 
-        <SwitchPreference
+        <androidx.preference.SwitchPreferenceCompat
             android:key="announce_source"
             android:title="@string/pref_announce_source"
             android:summary="@string/pref_announce_source_summary"
             android:defaultValue="true" />
 
-        <SwitchPreference
+        <androidx.preference.SwitchPreferenceCompat
             android:key="announce_app"
             android:title="@string/pref_announce_app"
             android:summary="@string/pref_announce_app_summary"
             android:defaultValue="false" />
 
-        <SwitchPreference
+        <androidx.preference.SwitchPreferenceCompat
             android:key="all_notifications_mode"
             android:title="@string/pref_all_notifications"
             android:summary="@string/pref_all_notifications_summary"
@@ -32,27 +32,27 @@
 
     <PreferenceCategory android:title="@string/cat_apps">
 
-        <SwitchPreference
+        <androidx.preference.SwitchPreferenceCompat
             android:key="paytm_enabled"
             android:title="@string/pref_paytm"
             android:defaultValue="true" />
 
-        <SwitchPreference
+        <androidx.preference.SwitchPreferenceCompat
             android:key="phonepe_enabled"
             android:title="@string/pref_phonepe"
             android:defaultValue="true" />
 
-        <SwitchPreference
+        <androidx.preference.SwitchPreferenceCompat
             android:key="gpay_enabled"
             android:title="@string/pref_gpay"
             android:defaultValue="true" />
 
-        <SwitchPreference
+        <androidx.preference.SwitchPreferenceCompat
             android:key="bhim_enabled"
             android:title="@string/pref_bhim"
             android:defaultValue="true" />
 
-        <SwitchPreference
+        <androidx.preference.SwitchPreferenceCompat
             android:key="other_upi_enabled"
             android:title="@string/pref_other_upi"
             android:summary="@string/pref_other_upi_summary"

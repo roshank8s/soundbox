@@ -153,9 +153,33 @@ public class PaymentNotificationService extends NotificationListenerService {
         broadcastIntent.putExtra(EXTRA_TIMESTAMP, payment.getTimestamp());
         sendBroadcast(broadcastIntent);
 
-        // Announce via TTS
-        Log.d(TAG, "Announcing: " + currentText);
-        soundBoxTTS.announce(currentText);
+        // Build announcement text respecting user preferences
+        String announcementText = buildAnnouncementText(payment);
+        Log.d(TAG, "Announcing: " + announcementText);
+        soundBoxTTS.announce(announcementText);
+    }
+
+    private String buildAnnouncementText(PaymentInfo payment) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Payment received");
+
+        String amount = payment.getAmount();
+        if (amount != null && !amount.isEmpty()) {
+            sb.append(", rupees ").append(amount);
+        }
+
+        if (prefs.shouldAnnounceSource()) {
+            String source = payment.getSource();
+            if (source != null && !source.isEmpty()) {
+                sb.append(", from ").append(source);
+            }
+        }
+
+        if (prefs.shouldAnnounceApp()) {
+            sb.append(", via ").append(payment.getAppName());
+        }
+
+        return sb.toString();
     }
 
     @Override

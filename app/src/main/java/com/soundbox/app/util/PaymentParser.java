@@ -25,12 +25,14 @@ public class PaymentParser {
 
     // Patterns to extract sender name
     private static final Pattern[] SENDER_PATTERNS = {
-        // from John, from John Doe
-        Pattern.compile("from\\s+([A-Za-z][A-Za-z\\s]{1,30}?)(?:\\s+(?:via|on|for|Rs|INR|\\u20B9|\\.|$))", Pattern.CASE_INSENSITIVE),
-        // by John
-        Pattern.compile("by\\s+([A-Za-z][A-Za-z\\s]{1,30}?)(?:\\s+(?:via|on|for|Rs|INR|\\u20B9|\\.|$))", Pattern.CASE_INSENSITIVE),
-        // Sender: John
-        Pattern.compile("(?:sender|paid by|sent by)[:\\s]+([A-Za-z][A-Za-z\\s]{1,30}?)(?:\\s*$|\\s+(?:via|on|for|\\.))", Pattern.CASE_INSENSITIVE),
+        // from John Doe (followed by keyword, punctuation, or end of string)
+        Pattern.compile("from\\s+([A-Za-z][A-Za-z\\s.]{1,30}?)(?:\\s+(?:via|on|for|to|in|at|Rs|INR|\\u20B9)|[.,;!]|$)", Pattern.CASE_INSENSITIVE),
+        // by John Doe
+        Pattern.compile("by\\s+([A-Za-z][A-Za-z\\s.]{1,30}?)(?:\\s+(?:via|on|for|to|in|at|Rs|INR|\\u20B9)|[.,;!]|$)", Pattern.CASE_INSENSITIVE),
+        // Sender: John or paid by John
+        Pattern.compile("(?:sender|paid by|sent by)[:\\s]+([A-Za-z][A-Za-z\\s.]{1,30}?)(?:\\s+(?:via|on|for)|[.,;!]|$)", Pattern.CASE_INSENSITIVE),
+        // UPI style: VPA name before @
+        Pattern.compile("([A-Za-z][A-Za-z\\s]{1,30}?)@[a-z]+", Pattern.CASE_INSENSITIVE),
     };
 
     // Package names for supported UPI apps
